@@ -1,0 +1,38 @@
+name: CI - Node.js Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Jest tests on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    steps:
+      # Step 1: Checkout the repo code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js version (matrix)
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run Jest tests
+      - name: Run tests
+        env:
+          CI: true
+        run: npm test
